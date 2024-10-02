@@ -46,7 +46,14 @@
           </span>
         </h1>
 
-        <div class="flex flex-row items-center justify-end gap-4">
+        <div class="flex flex-row items-center justify-end gap-6">
+          <button
+            x-on:click="confirm('Are you sure you want to clear all saved data?') && clearPersistedState()"
+            class="inline-flex flex-row gap-2 p-1 text-sm text-black/20 transition-colors duration-200 ease-in-out hover:text-red-700 dark:text-white/20 dark:hover:text-red-400"
+          >
+            Clear saved data
+          </button>
+
           <button
             x-on:click="toggleDarkMode()"
             class="inline-flex flex-row gap-2 p-1 text-sm text-black/20 transition-colors duration-200 ease-in-out hover:text-black dark:text-white/20 dark:hover:text-white"
@@ -63,7 +70,9 @@
         <table class="w-full rounded bg-white dark:bg-zinc-800">
           <thead>
             <tr class="bg-zinc-100 dark:bg-zinc-700">
-              <th class="px-2 py-1.5 text-left font-medium dark:text-zinc-300">
+              <th
+                class="px-2 py-1.5 text-center font-medium dark:text-zinc-300"
+              >
                 #
               </th>
               <th class="px-2 py-1.5 text-left font-medium dark:text-zinc-300">
@@ -96,7 +105,7 @@
                         'text-black': row.color?.text == 'black',
                         'text-black/70': row.color && row.color?.text == null,
                       }"
-                      :style="`background-color: ${row.color.value || 'ffffff'}!important`"
+                      :style="`background-color: ${row.color?.value || 'ffffff'}!important`"
                       :aria-expanded="isOpen"
                     >
                       <span class="inline-block" x-text="index + 1"></span>
@@ -193,34 +202,85 @@
                     </template>
                   </select>
                 </td>
-                <td class="border border-zinc-200 p-1 dark:border-zinc-700">
-                  <div class="flex space-x-1">
+                <td
+                  class="w-80 border border-zinc-200 p-1 dark:border-zinc-700"
+                >
+                  <div class="flex flex-wrap items-center justify-center gap-1">
                     <button
                       @click="cloneRow(index)"
-                      class="action-button"
+                      class="action-button flex items-center"
                       title="Clone"
                     >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="mr-1 h-4 w-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z"
+                        />
+                        <path
+                          d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z"
+                        />
+                      </svg>
                       Clone
                     </button>
                     <button
                       @click="cloneRowAndAdjustChannel(index, 1, 'input')"
-                      class="action-button"
-                      title="Clone and increase channel"
+                      class="action-button flex items-center"
+                      title="Clone and increase input channel"
                     >
-                      Clone & Inc In Ch
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="mr-1 h-4 w-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                      Ch.In
                     </button>
                     <button
                       @click="cloneRowAndAdjustChannel(index, 1, 'output')"
-                      class="action-button"
-                      title="Clone and increase channel"
+                      class="action-button flex items-center"
+                      title="Clone and increase output channel"
                     >
-                      Clone & Inc Out Ch
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="mr-1 h-4 w-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                      Ch.Out
                     </button>
                     <button
                       @click="removeRow(index)"
-                      class="action-button"
+                      class="action-button flex items-center"
                       title="Delete"
                     >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="mr-1 h-4 w-4"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
                       Delete
                     </button>
                   </div>
@@ -228,15 +288,33 @@
               </tr>
             </template>
           </tbody>
-          <tfoot class="align-text-bottom">
+          <tfoot>
             <tr>
               <td
-                colspan="5"
+                colspan="6"
                 class="border border-zinc-200 p-1 dark:border-zinc-700"
               >
-                <button @click="addRow()" class="action-button">
-                  Add Connection
-                </button>
+                <div class="flex w-full items-center justify-end">
+                  <button
+                    @click="addRow()"
+                    class="action-button flex items-center"
+                    title="Add Connection"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="mr-1 h-4 w-4"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                    Add MIDI Mapping
+                  </button>
+                </div>
               </td>
             </tr>
           </tfoot>

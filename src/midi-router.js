@@ -10,6 +10,7 @@ export default () => ({
   connections: [],
   logMessages: [],
   darkMode: false,
+  midiStatus: null,
 
   colors: [
     { label: "White", value: "#ffffff", text: "black" },
@@ -40,7 +41,7 @@ export default () => ({
     this.loadConnections();
 
     // this.restoreState();
-    this.initDemoContent();
+    // this.initDemoContent();
     // this.dummyLogger();
   },
 
@@ -120,6 +121,16 @@ export default () => ({
     this.updateConnections();
   },
 
+  clearPersistedState() {
+    localStorage.removeItem("midi-router-state");
+    localStorage.removeItem("midiConnections");
+    this.rows = [];
+    this.connections = [];
+    this.logMessages = [];
+
+    console.log(`[DEBUG] ---------- Cleared persisted state ----------`);
+  },
+
   persistState() {
     localStorage.setItem(
       "midi-router-state",
@@ -189,6 +200,7 @@ export default () => ({
         this.updateDeviceLists();
         this.updateConnections();
       };
+
       this.setupGlobalMIDIListeners();
       if (this.rows.length === 0) {
         this.addRow();
