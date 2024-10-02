@@ -1,0 +1,6 @@
+# Standard ignore stuff
+.idea
+.vscode
+node_modules
+vendor
+.env
