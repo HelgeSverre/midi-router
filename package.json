@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "type": "module",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "build": "vite build",
     "dev": "vite",
