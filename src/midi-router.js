@@ -2,6 +2,7 @@ import { generateRandomID } from "@/utils.js";
 
 export default () => ({
   debug: true,
+  consoleOpen: false,
   midiAccess: null,
   inputs: [],
   outputs: [],
@@ -14,7 +15,32 @@ export default () => ({
     this.loadDarkModePreference();
     await this.initializeMIDI();
     this.loadConnections();
+
+    this.restoreState();
     // this.dummyLogger();
+  },
+
+  persistState() {
+    localStorage.setItem(
+      "midi-router-state",
+      JSON.stringify({
+        rows: this.rows,
+        debug: this.debug,
+        darkMode: this.darkMode,
+        consoleOpen: this.consoleOpen,
+      }),
+    );
+  },
+
+  restoreState() {
+    const savedState = localStorage.getItem("midi-router-state");
+    if (savedState) {
+      const loaded = JSON.parse(savedState);
+      this.rows = loaded.rows || [];
+      this.debug = loaded.debug || false;
+      this.darkMode = loaded.darkMode || false;
+      this.consoleOpen = loaded.consoleOpen || false;
+    }
   },
 
   dummyLogger() {
@@ -82,23 +108,31 @@ export default () => ({
 
   cloneRow(index) {
     const originalRow = this.rows[index];
-    const newRow = { ...originalRow, id: generateRandomID() };
+    const newRow = JSON.parse(JSON.stringify(originalRow)); // Deep clone
+    newRow.id = generateRandomID(); // Assign a new ID
     this.rows.splice(index + 1, 0, newRow);
     this.saveConnections();
     this.updateConnections();
+    this.persistState();
   },
 
-  cloneRowAndAdjustChannel(index, adjustment) {
+  cloneRowAndAdjustChannel(index, adjustment, direction = "input") {
     const originalRow = this.rows[index];
-    const newRow = { ...originalRow, id: generateRandomID() };
+    const newRow = JSON.parse(JSON.stringify(originalRow)); // Deep clone
+    newRow.id = generateRandomID(); // Assign a new ID
 
-    console.log(`Adjusting channel by ${adjustment}`, newRow);
     // Adjust input channel if it's not 'all'
-    if (newRow.inputChannel !== "all") {
+    if (direction === "input" && newRow.inputChannel !== "all") {
       newRow.inputChannel = Math.min(
         Math.max(1, parseInt(newRow.inputChannel) + adjustment),
         16,
-      ).toString();
+      );
+    }
+    if (direction === "output") {
+      newRow.outputChannel = Math.min(
+        Math.max(1, parseInt(newRow.outputChannel) + adjustment),
+        16,
+      );
     }
 
     this.rows.splice(index + 1, 0, newRow);
@@ -107,6 +141,7 @@ export default () => ({
   },
 
   updateConnection(index) {
+    console.log("Updating connection", index);
     const row = this.rows[index];
     this.disconnectMIDIPort(row.inputId, row.outputId);
     if (row.inputId && row.outputId) {
@@ -130,7 +165,7 @@ export default () => ({
         output: output,
         inputChannel: inputChannel,
         outputChannel: outputChannel,
-        onmidimessage: (event) => {
+        onMidiEvent: (event) => {
           const [status, data1, data2] = event.data;
           const channel = status & 0xf;
           const messageType = status >> 4;
@@ -149,7 +184,7 @@ export default () => ({
         },
       };
 
-      input.addEventListener("midimessage", connection.onmidimessage);
+      input.addEventListener("midimessage", connection.onMidiEvent);
       this.connections.push(connection);
     }
   },
@@ -162,7 +197,7 @@ export default () => ({
       const connection = this.connections[connectionIndex];
       connection.input.removeEventListener(
         "midimessage",
-        connection.onmidimessage,
+        connection.onMidiEvent,
       );
       this.connections.splice(connectionIndex, 1);
     }
@@ -231,6 +266,10 @@ export default () => ({
     this.$refs.logWindow.scrollTop = this.$refs.logWindow.scrollHeight;
   },
 
+  toggleConsole() {
+    this.consoleOpen = !this.consoleOpen;
+  },
+
   toggleDarkMode() {
     this.darkMode = !this.darkMode;
     localStorage.setItem("darkMode", this.darkMode);
@@ -263,11 +302,9 @@ export default () => ({
   },
 
   updateConnections() {
-    this.logToWindow("Updating connections...", "debug");
-
     this.connections = [];
     this.rows.forEach((row, index) => {
-      this.logToWindow("Updating connection " + index, "debug");
+      this.logToWindow("Reconnecting row " + index, "debug");
 
       if (row.inputId && row.outputId) {
         this.connectMIDIPorts(

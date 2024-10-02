@@ -20,7 +20,7 @@
   <body
     class="h-full bg-zinc-100 font-sans text-xs text-zinc-900 transition-colors duration-200 dark:bg-zinc-900 dark:text-zinc-100"
   >
-    <nav class="flex h-full flex-1 flex-col">
+    <nav class="flex h-full flex-1 flex-col gap-2">
       <div
         class="flex flex-row items-center justify-between border-b border-gray-300 px-3 py-2 dark:border-gray-950"
       >
@@ -56,8 +56,8 @@
         </button>
       </div>
 
-      <main class="flex-1 bg-zinc-100 p-3 dark:bg-zinc-900">
-        <table class="mb-3 w-full rounded bg-white text-xs dark:bg-zinc-800">
+      <main class="flex-1 overflow-auto bg-zinc-100 p-2 dark:bg-zinc-900">
+        <table class="w-full rounded bg-white dark:bg-zinc-800">
           <thead>
             <tr class="bg-zinc-100 dark:bg-zinc-700">
               <th class="px-2 py-1.5 text-left font-medium dark:text-zinc-300">
@@ -88,8 +88,11 @@
                     x-on:change="updateConnection(index)"
                     class="input-field w-full"
                   >
-                    <option value="">Select input</option>
-                    <template x-for="input in inputs" :key="input.id">
+                    <option disabled value="">Select input</option>
+                    <template
+                      x-for="input in inputs"
+                      :key="`input-${input.id}`"
+                    >
                       <option :value="input.id" x-text="input.name"></option>
                     </template>
                   </select>
@@ -98,13 +101,17 @@
                   class="border border-zinc-200 px-2 py-1.5 dark:border-zinc-700"
                 >
                   <select
-                    x-model="row.inputChannel"
+                    x-model.number="row.inputChannel"
                     x-on:change="updateConnection(index)"
                     class="input-field min-w-16"
                   >
                     <option value="all">All</option>
-                    <template x-for="n in 16" :key="n">
-                      <option :value="n" x-text="n"></option>
+                    <template x-for="n in 16" :key="`input-channel-${n}`">
+                      <option
+                        :value="n"
+                        x-text="n"
+                        :selected="n === row.inputChannel"
+                      ></option>
                     </template>
                   </select>
                 </td>
@@ -116,8 +123,11 @@
                     x-on:change="updateConnection(index)"
                     class="input-field w-full"
                   >
-                    <option value="">Select output</option>
-                    <template x-for="output in outputs" :key="output.id">
+                    <option disabled value="">Select output</option>
+                    <template
+                      x-for="output in outputs"
+                      :key="`output-${output.id}`"
+                    >
                       <option :value="output.id" x-text="output.name"></option>
                     </template>
                   </select>
@@ -126,12 +136,16 @@
                   class="border border-zinc-200 px-2 py-1.5 dark:border-zinc-700"
                 >
                   <select
-                    x-model="row.outputChannel"
+                    x-model.number="row.outputChannel"
                     x-on:change="updateConnection(index)"
                     class="input-field min-w-16"
                   >
-                    <template x-for="n in 16" :key="n">
-                      <option :value="n" x-text="n"></option>
+                    <template x-for="n in 16" :key="`output-channel-${n}`">
+                      <option
+                        :value="n"
+                        x-text="n"
+                        :selected="n === row.outputChannel"
+                      ></option>
                     </template>
                   </select>
                 </td>
@@ -147,19 +161,18 @@
                       Clone
                     </button>
                     <button
-                      @click="cloneRowAndAdjustChannel(index, -1)"
-                      class="action-button"
-                      title="Clone and decrease channel"
-                    >
-                      Clone (Ch -1)
-                      <i data-lucide="minus-circle"></i>
-                    </button>
-                    <button
-                      @click="cloneRowAndAdjustChannel(index, 1)"
+                      @click="cloneRowAndAdjustChannel(index, 1, 'input')"
                       class="action-button"
                       title="Clone and increase channel"
                     >
-                      Clone (Ch +1)
+                      Clone & Inc In Ch
+                    </button>
+                    <button
+                      @click="cloneRowAndAdjustChannel(index, 1, 'output')"
+                      class="action-button"
+                      title="Clone and increase channel"
+                    >
+                      Clone & Inc Out Ch
                     </button>
                     <button
                       @click="removeRow(index)"
@@ -196,20 +209,30 @@
           class="flex items-center justify-between bg-zinc-200 px-3 py-1.5 dark:bg-zinc-950"
         >
           <span class="font-mono text-xs leading-none">MIDI Event Log</span>
-          <div>
+          <div class="flex space-x-2">
             <button
               @click="clearLog"
               class="block p-0.5 text-xs leading-none text-zinc-800 dark:text-zinc-400"
             >
               Clear
             </button>
+            <button
+              @click="toggleConsole()"
+              class="block p-0.5 text-xs leading-none text-zinc-800 dark:text-zinc-400"
+            >
+              Toggle
+            </button>
           </div>
         </div>
         <div
-          class="h-48 overflow-y-auto bg-zinc-900 p-2 pb-4 font-mono text-xs text-green-400 dark:bg-zinc-950/80"
+          class="overflow-y-auto bg-zinc-900  font-mono text-xs text-green-400 dark:bg-zinc-950/80"
           x-ref="logWindow"
+          x-bind:class="{
+            'h-48 p-2 pb-4': consoleOpen,
+            'h-0 p-0': !consoleOpen,
+          }"
         >
-          <template x-for="(log, index) in logMessages" :key="index">
+          <template x-for="(log, index) in logMessages" :key="`log-${index}`">
             <div class="leading-4">
               <div
                 x-on:class="{
