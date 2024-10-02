@@ -176,6 +176,12 @@ export default () => ({
     }
   },
 
+  clearLog() {
+    this.logMessages = [];
+
+    console.log(`[DEBUG] ---------- Cleared log ----------`);
+  },
+
   logToWindow(message, type = "info") {
     if (type === "debug" && !this.debug) {
       return;
@@ -186,7 +192,8 @@ export default () => ({
       message: message,
       type: type,
     };
-    console.log(`[LOG] ${type}: ${message}`);
+
+    console.log(`[DEBUG] ${entry.message}`);
 
     this.logMessages.push(entry);
     this.scrollToBottom();
