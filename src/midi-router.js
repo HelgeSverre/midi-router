@@ -11,13 +11,113 @@ export default () => ({
   logMessages: [],
   darkMode: false,
 
+  colors: [
+    { label: "White", value: "#ffffff", text: "black" },
+    { label: "Black", value: "#000000", text: "white" },
+    { label: "Gray", value: "#3F3F46", text: "white" },
+    { label: "Red", value: "#fca5a5" },
+    { label: "Orange", value: "#fdba74" },
+    { label: "Amber", value: "#fcd34d" },
+    { label: "Yellow", value: "#fde047" },
+    { label: "Lime", value: "#bef264" },
+    { label: "Green", value: "#86efac" },
+    { label: "Emerald", value: "#6ee7b7" },
+    { label: "Teal", value: "#5eead4" },
+    { label: "Cyan", value: "#67e8f9" },
+    { label: "Sky", value: "#7dd3fc" },
+    { label: "Blue", value: "#93c5fd" },
+    { label: "Indigo", value: "#a5b4fc" },
+    { label: "Violet", value: "#c4b5fd" },
+    { label: "Purple", value: "#d8b4fe" },
+    { label: "Fuchsia", value: "#f0abfc" },
+    { label: "Pink", value: "#f9a8d4" },
+    { label: "Rose", value: "#fda4af" },
+  ],
+
   async init() {
     this.loadDarkModePreference();
     await this.initializeMIDI();
     this.loadConnections();
 
-    this.restoreState();
+    // this.restoreState();
+    this.initDemoContent();
     // this.dummyLogger();
+  },
+
+  initDemoContent() {
+    this.inputs = [
+      { id: "dummy-virus", name: "Virus TI" },
+      { id: "dummy-midi", name: "MIDI Keyboard" },
+      { id: "dummy-monkey", name: "WAVY MONKEY" },
+      { id: "dummy-elektron", name: "Elektron Digitakt - MIDI IN" },
+    ];
+
+    this.outputs = [
+      { id: "dummy-synth-1", name: "Virus TI" },
+      { id: "dummy-synth-2", name: "JP-8000" },
+      { id: "dummy-elektron", name: "Elektron Digitakt - MIDI OUT" },
+      { id: "dummy-synth-3", name: "Novation Peak" },
+      { id: "dummy-synth-4", name: "Prophet 6" },
+      { id: "dummy-synth-5", name: "OB-6" },
+      { id: "dummy-synth-6", name: "Virus C" },
+      { id: "dummy-synth-7", name: "WASP DELUXE" },
+      { id: "dummy-synth-8", name: "PRO-1" },
+      { id: "dummy-synth-9", name: "Microsoft. GS Wavetable Synth" },
+      { id: "dummy-synth-10", name: "SoundFont2 - Extreme" },
+    ];
+
+    this.rows = [
+      {
+        id: generateRandomID(),
+        inputId: "dummy-virus",
+        outputId: "dummy-synth-1",
+        inputChannel: "all",
+        outputChannel: 1,
+      },
+      {
+        id: generateRandomID(),
+        inputId: "dummy-midi",
+        outputId: "dummy-synth-2",
+        inputChannel: "all",
+        outputChannel: 1,
+      },
+      {
+        id: generateRandomID(),
+        inputId: "dummy-monkey",
+        outputId: "dummy-synth-3",
+        inputChannel: 1,
+        outputChannel: 1,
+      },
+      {
+        id: generateRandomID(),
+        inputId: "dummy-monkey",
+        outputId: "dummy-synth-2",
+        inputChannel: 2,
+        outputChannel: 1,
+      },
+      {
+        id: generateRandomID(),
+        inputId: "dummy-monkey",
+        outputId: "dummy-synth-3",
+        inputChannel: 2,
+        outputChannel: 1,
+      },
+      {
+        id: generateRandomID(),
+        inputId: "dummy-electron",
+        outputId: "dummy-synth-4",
+        inputChannel: 4,
+        outputChannel: 2,
+      },
+    ];
+
+    this.rows = this.rows.map((row) => ({
+      ...row,
+      color: this.colors[Math.floor(Math.random() * this.colors.length)],
+    }));
+
+    this.saveConnections();
+    this.updateConnections();
   },
 
   persistState() {

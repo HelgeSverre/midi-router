@@ -20,8 +20,8 @@
   <body
     class="h-full bg-zinc-100 font-sans text-xs text-zinc-900 transition-colors duration-200 dark:bg-zinc-900 dark:text-zinc-100"
   >
-    <nav class="flex h-full flex-1 flex-col gap-2">
-      <div
+    <main class="flex h-full flex-1 flex-col">
+      <nav
         class="flex flex-row items-center justify-between border-b border-gray-300 px-3 py-2 dark:border-gray-950"
       >
         <h1 class="inline-flex items-center justify-center gap-1.5">
@@ -54,12 +54,15 @@
         >
           <span x-text="darkMode ? '🌙' : '☀️'"></span>
         </button>
-      </div>
+      </nav>
 
-      <main class="flex-1 overflow-auto bg-zinc-100 p-2 dark:bg-zinc-900">
+      <main class="flex-1 overflow-auto bg-zinc-100 px-2 dark:bg-zinc-900">
         <table class="w-full rounded bg-white dark:bg-zinc-800">
           <thead>
             <tr class="bg-zinc-100 dark:bg-zinc-700">
+              <th class="px-2 py-1.5 text-left font-medium dark:text-zinc-300">
+                #
+              </th>
               <th class="px-2 py-1.5 text-left font-medium dark:text-zinc-300">
                 Input
               </th>
@@ -79,10 +82,45 @@
           </thead>
           <tbody>
             <template x-for="(row, index) in rows" :key="row.id">
-              <tr class="border-b border-zinc-200 dark:border-zinc-700">
-                <td
-                  class="border border-zinc-200 px-2 py-1.5 dark:border-zinc-700"
-                >
+              <tr class="h-full border border-zinc-200 dark:border-zinc-700">
+                <td class="size-10">
+                  <div x-data="{ isOpen: false }" class="relative">
+                    <button
+                      @click="isOpen = !isOpen"
+                      class="mx-auto flex size-7 items-center justify-center rounded px-1 text-center font-mono text-xl leading-none text-black/70"
+                      :class="{
+                        'text-white': row.color?.text == 'white',
+                        'text-black': row.color?.text == 'black',
+                      }"
+                      :style="`background-color: ${row.color.value || 'ffffff'}!important`"
+                      :aria-expanded="isOpen"
+                    >
+                      <span class="inline-block" x-text="index + 1"></span>
+                    </button>
+                    <div
+                      x-show="isOpen"
+                      @click.away="isOpen = false"
+                      class="absolute left-full top-full z-10 mt-1 w-60 rounded-md border border-gray-200 bg-white p-2 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+                    >
+                      <div class="grid grid-cols-6 gap-1">
+                        <template x-for="color in colors">
+                          <button
+                            :style="`background-color: ${color.value}!important;`"
+                            class="block size-8 rounded-sm border border-gray-300 dark:border-gray-600"
+                            :class="{
+                              'text-white': color.text == 'white',
+                              'text-black': color.text == 'black',
+                            }"
+                            x-on:click="row.color = color; updateConnection(index); isOpen = false;"
+                            :title="color.label"
+                          ></button>
+                        </template>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <td class="border border-zinc-200 p-1 dark:border-zinc-700">
                   <select
                     x-model="row.inputId"
                     x-on:change="updateConnection(index)"
@@ -93,17 +131,19 @@
                       x-for="input in inputs"
                       :key="`input-${input.id}`"
                     >
-                      <option :value="input.id" x-text="input.name"></option>
+                      <option
+                        :selected="input.id === row.inputId"
+                        :value="input.id"
+                        x-text="input.name"
+                      ></option>
                     </template>
                   </select>
                 </td>
-                <td
-                  class="border border-zinc-200 px-2 py-1.5 dark:border-zinc-700"
-                >
+                <td class="border border-zinc-200 p-1 dark:border-zinc-700">
                   <select
                     x-model.number="row.inputChannel"
                     x-on:change="updateConnection(index)"
-                    class="input-field min-w-16"
+                    class="input-field w-full"
                   >
                     <option value="all">All</option>
                     <template x-for="n in 16" :key="`input-channel-${n}`">
@@ -115,9 +155,7 @@
                     </template>
                   </select>
                 </td>
-                <td
-                  class="border border-zinc-200 px-2 py-1.5 dark:border-zinc-700"
-                >
+                <td class="border border-zinc-200 p-1 dark:border-zinc-700">
                   <select
                     x-model="row.outputId"
                     x-on:change="updateConnection(index)"
@@ -128,17 +166,19 @@
                       x-for="output in outputs"
                       :key="`output-${output.id}`"
                     >
-                      <option :value="output.id" x-text="output.name"></option>
+                      <option
+                        :selected="output.id === row.outputId"
+                        :value="output.id"
+                        x-text="output.name"
+                      ></option>
                     </template>
                   </select>
                 </td>
-                <td
-                  class="border border-zinc-200 px-2 py-1.5 dark:border-zinc-700"
-                >
+                <td class="border border-zinc-200 p-1 dark:border-zinc-700">
                   <select
                     x-model.number="row.outputChannel"
                     x-on:change="updateConnection(index)"
-                    class="input-field min-w-16"
+                    class="input-field w-full"
                   >
                     <template x-for="n in 16" :key="`output-channel-${n}`">
                       <option
@@ -149,9 +189,7 @@
                     </template>
                   </select>
                 </td>
-                <td
-                  class="border border-zinc-200 px-2 py-1.5 dark:border-zinc-700"
-                >
+                <td class="border border-zinc-200 p-1 dark:border-zinc-700">
                   <div class="flex space-x-1">
                     <button
                       @click="cloneRow(index)"
@@ -190,7 +228,7 @@
             <tr>
               <td
                 colspan="5"
-                class="border border-zinc-200 px-2 py-1.5 dark:border-zinc-700"
+                class="border border-zinc-200 p-1 dark:border-zinc-700"
               >
                 <button
                   @click="addRow()"
@@ -225,7 +263,7 @@
           </div>
         </div>
         <div
-          class="overflow-y-auto bg-zinc-900  font-mono text-xs text-green-400 dark:bg-zinc-950/80"
+          class="overflow-y-auto bg-zinc-900 font-mono text-xs text-green-400 dark:bg-zinc-950/80"
           x-ref="logWindow"
           x-bind:class="{
             'h-48 p-2 pb-4': consoleOpen,
@@ -250,6 +288,6 @@
           </template>
         </div>
       </aside>
-    </nav>
+    </main>
   </body>
 </html>
