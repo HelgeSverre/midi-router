@@ -1,3 +1,5 @@
+import { generateRandomID } from "@/utils.js";
+
 export default () => ({
   debug: true,
   midiAccess: null,
@@ -12,29 +14,28 @@ export default () => ({
     this.loadDarkModePreference();
     await this.initializeMIDI();
     this.loadConnections();
+    // this.dummyLogger();
+  },
 
-    const debugMessage = () => {
-      const status = 0x90;
-      const data1 = Math.floor(Math.random() * 127);
-      const data2 = Math.floor(Math.random() * 127);
-      const decodedMessage = this.decodeMIDIMessage(status, data1, data2);
+  dummyLogger() {
+    const status = 0x90;
+    const data1 = Math.floor(Math.random() * 127);
+    const data2 = Math.floor(Math.random() * 127);
+    const decodedMessage = this.decodeMIDIMessage(status, data1, data2);
 
-      const logMessage = `Test Event:  ${decodedMessage} | Raw: [${[status, data1, data2].map((d) => d.toString(16).padStart(2, "0")).join(" ")}]`;
+    const logMessage = `Test Event:  ${decodedMessage} | Raw: [${[status, data1, data2].map((d) => d.toString(16).padStart(2, "0")).join(" ")}]`;
 
-      if (Math.random() > 0.75) {
-        this.logToWindow(logMessage, "info");
-      } else if (Math.random() > 0.5) {
-        this.logToWindow(logMessage, "warn");
-      } else if (Math.random() > 0.25) {
-        this.logToWindow(logMessage, "error");
-      } else {
-        this.logToWindow(logMessage, "success");
-      }
+    if (Math.random() > 0.75) {
+      this.logToWindow(logMessage, "info");
+    } else if (Math.random() > 0.5) {
+      this.logToWindow(logMessage, "warn");
+    } else if (Math.random() > 0.25) {
+      this.logToWindow(logMessage, "error");
+    } else {
+      this.logToWindow(logMessage, "success");
+    }
 
-      setTimeout(debugMessage, Math.random() * 600);
-    };
-
-    debugMessage();
+    setTimeout(this.dummyLogger.bind(this), Math.random() * 600);
   },
 
   async initializeMIDI() {
@@ -61,6 +62,7 @@ export default () => ({
 
   addRow() {
     this.rows.push({
+      id: generateRandomID(),
       inputId: "",
       outputId: "",
       inputChannel: "all",
@@ -76,6 +78,32 @@ export default () => ({
     );
     this.rows.splice(index, 1);
     this.saveConnections();
+  },
+
+  cloneRow(index) {
+    const originalRow = this.rows[index];
+    const newRow = { ...originalRow, id: generateRandomID() };
+    this.rows.splice(index + 1, 0, newRow);
+    this.saveConnections();
+    this.updateConnections();
+  },
+
+  cloneRowAndAdjustChannel(index, adjustment) {
+    const originalRow = this.rows[index];
+    const newRow = { ...originalRow, id: generateRandomID() };
+
+    console.log(`Adjusting channel by ${adjustment}`, newRow);
+    // Adjust input channel if it's not 'all'
+    if (newRow.inputChannel !== "all") {
+      newRow.inputChannel = Math.min(
+        Math.max(1, parseInt(newRow.inputChannel) + adjustment),
+        16,
+      ).toString();
+    }
+
+    this.rows.splice(index + 1, 0, newRow);
+    this.saveConnections();
+    this.updateConnections();
   },
 
   updateConnection(index) {
@@ -217,6 +245,7 @@ export default () => ({
 
   saveConnections() {
     const connectionsToSave = this.rows.map((row) => ({
+      id: row.id,
       inputId: row.inputId,
       outputId: row.outputId,
       inputChannel: row.inputChannel,

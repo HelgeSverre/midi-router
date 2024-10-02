@@ -10,12 +10,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MIDI Router</title>
+    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <link
+      href="https://fonts.bunny.net/css?family=inter:300,400,600,700|jetbrains-mono:100,200,300,400,500,600,700,800"
+      rel="stylesheet"
+    />
     <script type="module" src="./main.js" defer></script>
   </head>
   <body
-    class="h-full bg-zinc-100 text-xs text-zinc-900 transition-colors duration-200 dark:bg-zinc-900 dark:text-zinc-100"
+    class="h-full bg-zinc-100 font-sans text-xs text-zinc-900 transition-colors duration-200 dark:bg-zinc-900 dark:text-zinc-100"
   >
-    <div class="flex h-full flex-1 flex-col">
+    <nav class="flex h-full flex-1 flex-col">
       <div
         class="flex flex-row items-center justify-between border-b border-gray-300 px-3 py-2 dark:border-gray-950"
       >
@@ -30,7 +35,7 @@
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="lucide lucide-route size-4 text-yellow-800 dark:text-yellow-500"
+            class="size-4 text-yellow-800 dark:text-yellow-500"
           >
             <circle cx="6" cy="19" r="3" />
             <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" />
@@ -51,7 +56,7 @@
         </button>
       </div>
 
-      <div class="flex-1 bg-zinc-100 p-3 dark:bg-zinc-900">
+      <main class="flex-1 bg-zinc-100 p-3 dark:bg-zinc-900">
         <table class="mb-3 w-full rounded bg-white text-xs dark:bg-zinc-800">
           <thead>
             <tr class="bg-zinc-100 dark:bg-zinc-700">
@@ -73,14 +78,14 @@
             </tr>
           </thead>
           <tbody>
-            <template x-for="(row, index) in rows" :key="index">
+            <template x-for="(row, index) in rows" :key="row.id">
               <tr class="border-b border-zinc-200 dark:border-zinc-700">
                 <td
                   class="border border-zinc-200 px-2 py-1.5 dark:border-zinc-700"
                 >
                   <select
                     x-model="row.inputId"
-                    @change="updateConnection(index)"
+                    x-on:change="updateConnection(index)"
                     class="input-field w-full"
                   >
                     <option value="">Select input</option>
@@ -94,8 +99,8 @@
                 >
                   <select
                     x-model="row.inputChannel"
-                    @change="updateConnection(index)"
-                    class="input-field min-w-32"
+                    x-on:change="updateConnection(index)"
+                    class="input-field min-w-16"
                   >
                     <option value="all">All</option>
                     <template x-for="n in 16" :key="n">
@@ -108,7 +113,7 @@
                 >
                   <select
                     x-model="row.outputId"
-                    @change="updateConnection(index)"
+                    x-on:change="updateConnection(index)"
                     class="input-field w-full"
                   >
                     <option value="">Select output</option>
@@ -122,8 +127,8 @@
                 >
                   <select
                     x-model="row.outputChannel"
-                    @change="updateConnection(index)"
-                    class="input-field min-w-32"
+                    x-on:change="updateConnection(index)"
+                    class="input-field min-w-16"
                   >
                     <template x-for="n in 16" :key="n">
                       <option :value="n" x-text="n"></option>
@@ -133,12 +138,37 @@
                 <td
                   class="border border-zinc-200 px-2 py-1.5 dark:border-zinc-700"
                 >
-                  <button
-                    @click="removeRow(index)"
-                    class="rounded bg-red-500 px-2 py-0.5 text-xs font-medium text-white transition-colors duration-200 hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
+                  <div class="flex space-x-1">
+                    <button
+                      @click="cloneRow(index)"
+                      class="action-button"
+                      title="Clone"
+                    >
+                      Clone
+                    </button>
+                    <button
+                      @click="cloneRowAndAdjustChannel(index, -1)"
+                      class="action-button"
+                      title="Clone and decrease channel"
+                    >
+                      Clone (Ch -1)
+                      <i data-lucide="minus-circle"></i>
+                    </button>
+                    <button
+                      @click="cloneRowAndAdjustChannel(index, 1)"
+                      class="action-button"
+                      title="Clone and increase channel"
+                    >
+                      Clone (Ch +1)
+                    </button>
+                    <button
+                      @click="removeRow(index)"
+                      class="action-button"
+                      title="Delete"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             </template>
@@ -159,9 +189,9 @@
             </tr>
           </tfoot>
         </table>
-      </div>
+      </main>
 
-      <div class="border-t border-gray-300 dark:border-gray-950">
+      <aside class="border-t border-gray-300 dark:border-gray-950">
         <div
           class="flex items-center justify-between bg-zinc-200 px-3 py-1.5 dark:bg-zinc-950"
         >
@@ -169,20 +199,20 @@
           <div>
             <button
               @click="clearLog"
-              class="block p-0.5 text-xs font-normal leading-none text-zinc-800 dark:text-zinc-200"
+              class="block p-0.5 text-xs leading-none text-zinc-800 dark:text-zinc-400"
             >
-              Clear Log
+              Clear
             </button>
           </div>
         </div>
         <div
-          class="h-48 overflow-y-auto bg-zinc-900 p-2 font-mono text-xs text-green-400 dark:bg-zinc-950/80"
+          class="h-48 overflow-y-auto bg-zinc-900 p-2 pb-4 font-mono text-xs text-green-400 dark:bg-zinc-950/80"
           x-ref="logWindow"
         >
           <template x-for="(log, index) in logMessages" :key="index">
             <div class="leading-4">
               <div
-                x-bind:class="{
+                x-on:class="{
                 'text-zinc-400': log.type === 'info',
                 'text-red-400': log.type === 'error',
                 'text-yellow-400': log.type === 'warning',
@@ -196,7 +226,7 @@
             </div>
           </template>
         </div>
-      </div>
-    </div>
+      </aside>
+    </nav>
   </body>
 </html>

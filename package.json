@@ -1,8 +1,8 @@
 {
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "deploy": "npx vc --production",
     "dev": "vite",
     "format": "npx prettier --write .",
     "sort": "npx sort-package-json"

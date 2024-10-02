@@ -1,12 +1,16 @@
-import generated from "@tailwindcss/forms";
+const defaultTheme = require("tailwindcss/defaultTheme");
 
-/** @type {import('tailwindcss').Config} */
+/** @type {import("tailwindcss").Config} */
 // tailwind.config.js
 module.exports = {
   content: ["./src/**/*.{html,js}"],
   darkMode: "class",
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ["Inter", ...defaultTheme.fontFamily.sans],
+        mono: ["JetBrains Mono", ...defaultTheme.fontFamily.mono],
+      },
+    },
   },
-  plugins: [generated],
 };

@@ -7,3 +7,4 @@ vendor
 
 # Generated files
 dist/
+.vercel
