@@ -26,7 +26,13 @@ devices. It's perfect for musicians, producers, and anyone working with MIDI-ena
 - A web browser that supports the Web MIDI API (e.g., Chrome, Edge)
 - MIDI devices (input and/or output)
 
-### Installation
+### Hosted Version
+
+The application is hosted on Vercel. You can access it at the following URL:
+
+> 🔗 [https://midi-router.vercel.app/](https://midi-router.vercel.app/)
+
+### Installation - Local Development
 
 1. Clone the repository:
 
@@ -73,9 +79,3 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Thanks to all contributors and users of the MIDI Router project.
-- Inspired by the need for flexible MIDI routing in modern music production setups.
--
