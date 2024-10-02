@@ -209,6 +209,7 @@ export default () => ({
     this.updateDeviceLists();
     this.updateConnections();
   },
+
   panicSendAllNotesOff() {
     this.outputs.forEach((output) => {
       for (let channel = 0; channel < 16; channel++) {
@@ -247,10 +248,8 @@ export default () => ({
   },
 
   removeRow(index) {
-    this.disconnectMIDIPort(
-      this.rows[index].inputId,
-      this.rows[index].outputId,
-    );
+    const row = this.rows[index];
+    this.disconnectMIDIPort(row.inputId, row.outputId);
     this.rows.splice(index, 1);
     this.saveConnections();
   },
@@ -310,29 +309,34 @@ export default () => ({
 
     if (input && output) {
       const connection = {
-        input: input,
-        output: output,
-        inputChannel: inputChannel,
-        outputChannel: outputChannel,
+        input,
+        output,
+        inputChannel,
+        outputChannel,
         onMidiEvent: (event) => {
           const [status, data1, data2] = event.data;
-          const channel = status & 0xf;
-          const messageType = status >> 4;
+          const channel = status & 0x0f;
 
           if (
             inputChannel === "all" ||
             channel === parseInt(inputChannel) - 1
           ) {
-            let newStatus = (status & 0xf0) | (parseInt(outputChannel) - 1);
+            const newStatus = (status & 0xf0) | (parseInt(outputChannel) - 1);
             output.send([newStatus, data1, data2]);
 
+            const hexData = event.data
+              .map((d) => d.toString(16).padStart(2, "0"))
+              .join(" ");
+            const newHexData = [newStatus, data1, data2]
+              .map((d) => d.toString(16).padStart(2, "0"))
+              .join(" ");
+
             const decodedMessage = this.decodeMIDIMessage(status, data1, data2);
-            const logMessage = `Routed: ${input.name} (ch ${channel + 1}) -> ${output.name} (ch ${outputChannel}): ${decodedMessage} | Raw: [${event.data.map((d) => d.toString(16).padStart(2, "0")).join(" ")}] -> [${[newStatus, data1, data2].map((d) => d.toString(16).padStart(2, "0")).join(" ")}]`;
+            const logMessage = `Routed: ${input.name} (ch ${channel + 1}) -> ${output.name} (ch ${outputChannel}): ${decodedMessage} | Raw: [${hexData}] -> [${newHexData}]`;
             this.logToWindow(logMessage, "success");
           }
         },
       };
-
       input.addEventListener("midimessage", connection.onMidiEvent);
       this.connections.push(connection);
     }
