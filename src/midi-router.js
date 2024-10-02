@@ -117,6 +117,8 @@ export default () => ({
       color: this.colors[Math.floor(Math.random() * this.colors.length)],
     }));
 
+    this.consoleOpen = true;
+
     this.saveConnections();
     this.updateConnections();
   },
@@ -177,12 +179,12 @@ export default () => ({
     const randomMIDIEvent =
       midiEventTypes[Math.floor(Math.random() * midiEventTypes.length)];
 
+    this.logToWindow(logMessage, "warning");
     const logMessage = `${randomMIDIEvent} ${suffix}`;
 
     if (Math.random() > 0.75) {
       this.logToWindow(logMessage, "info");
     } else if (Math.random() > 0.5) {
-      this.logToWindow(logMessage, "warn");
     } else if (Math.random() > 0.25) {
       this.logToWindow(logMessage, "error");
     } else {
@@ -208,6 +210,26 @@ export default () => ({
     } catch (error) {
       console.error("MIDI access denied:", error);
     }
+  },
+
+  panicSendAllNotesOff() {
+    this.outputs.forEach((output) => {
+      for (let channel = 0; channel < 16; channel++) {
+        try {
+          this.logToWindow(
+            "Sending All Notes Off to " + output.name,
+            "warning",
+          );
+          output?.send([0xb0 + channel, 0x7b, 0]);
+          this.logToWindow("Sent All Notes Off to " + output.name, "warning");
+        } catch (err) {
+          this.logToWindow(
+            "Failed to send All Notes Off to " + output.name,
+            "error",
+          );
+        }
+      }
+    });
   },
 
   updateDeviceLists() {
@@ -389,7 +411,10 @@ export default () => ({
     console.log(`[DEBUG] ${entry.message}`);
 
     this.logMessages.push(entry);
-    this.scrollToBottom();
+
+    this.$nextTick(() => {
+      this.scrollToBottom();
+    });
   },
 
   scrollToBottom() {

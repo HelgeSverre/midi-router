@@ -55,6 +55,14 @@
           </button>
 
           <button
+            x-on:click="panicSendAllNotesOff()"
+            class="inline-flex flex-row gap-2 p-1 text-sm text-black/20 transition-colors duration-200 ease-in-out hover:text-black dark:text-white/20 dark:hover:text-white"
+            title="Send all notes off"
+          >
+            ⚠️ Panic
+          </button>
+
+          <button
             x-on:click="toggleDarkMode()"
             class="inline-flex flex-row gap-2 p-1 text-sm text-black/20 transition-colors duration-200 ease-in-out hover:text-black dark:text-white/20 dark:hover:text-white"
             :aria-label="`Turn on ${darkMode ? 'light' : 'dark'} mode`"
@@ -342,7 +350,7 @@
           </div>
         </div>
         <div
-          class="overflow-y-auto bg-zinc-900 font-mono text-xs text-green-400 dark:bg-zinc-950/80"
+          class="overflow-y-auto scroll-smooth bg-zinc-900 font-mono text-xs text-green-400 dark:bg-zinc-950/80"
           x-ref="logWindow"
           x-bind:class="{
             'h-48 p-2 pb-4': consoleOpen,
