@@ -144,12 +144,29 @@ export default () => ({
   },
 
   dummyLogger() {
-    const status = 0x90;
+    const status =
+      Math.floor(Math.random() * 16) * 16 + Math.floor(Math.random() * 16);
     const data1 = Math.floor(Math.random() * 127);
     const data2 = Math.floor(Math.random() * 127);
     const decodedMessage = this.decodeMIDIMessage(status, data1, data2);
+    const channel = (status & 0xf) + 1;
 
-    const logMessage = `Test Event:  ${decodedMessage} | Raw: [${[status, data1, data2].map((d) => d.toString(16).padStart(2, "0")).join(" ")}]`;
+    const midiEventTypes = [
+      `Ch: ${channel} - Note Off: Note ${data1}, Velocity ${data2}`,
+      `Ch: ${channel} - Note On: Note ${data1}, Velocity ${data2}`,
+      // `Ch: ${channel} - Polyphonic Aftertouch: Note ${data1}, Pressure ${data2}`,
+      `Ch: ${channel} - Control Change: Controller ${data1}, Value ${data2}`,
+      // `Ch: ${channel} - Program Change: Program ${data1}`,
+      // `Ch: ${channel} - Channel Aftertouch: Pressure ${data1}`,
+      `Ch: ${channel} - Pitch Bend: Value ${(data2 << 7) + data1}`,
+      // `Unknown: Status ${status.toString(16)}, Data [${data1}, ${data2}]`,
+    ];
+
+    const suffix = `| Raw: [${[status, data1, data2].map((d) => d.toString(16).padStart(2, "0")).join(" ")}]`;
+    const randomMIDIEvent =
+      midiEventTypes[Math.floor(Math.random() * midiEventTypes.length)];
+
+    const logMessage = `${randomMIDIEvent} ${suffix}`;
 
     if (Math.random() > 0.75) {
       this.logToWindow(logMessage, "info");
@@ -193,6 +210,7 @@ export default () => ({
       outputId: "",
       inputChannel: "all",
       outputChannel: 1,
+      color: null,
     });
     this.saveConnections();
   },

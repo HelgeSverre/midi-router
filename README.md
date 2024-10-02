@@ -1,8 +1,9 @@
-# MIDI Router
+# 🎹↯ MIDI Router
 
 ![MIDI Router Logo](https://via.placeholder.com/1200x300.png?text=MIDI+Router)
 
-MIDI Router is a web-based application that allows you to route MIDI messages between different input and output devices. It's perfect for musicians, producers, and anyone working with MIDI-enabled hardware or software.
+MIDI Router is a web-based application that allows you to route MIDI messages between different input and output
+devices. It's perfect for musicians, producers, and anyone working with MIDI-enabled hardware or software.
 
 ## Features
 
@@ -11,13 +12,12 @@ MIDI Router is a web-based application that allows you to route MIDI messages be
 - 🌓 Dark mode support
 - 📊 Real-time MIDI event logging
 - 💾 Automatic saving of routing configurations
-- 🔌 Dynamic device connection/disconnection handling
 
 ## Demo
 
-[View Live Demo](https://your-demo-url.com)
+[View Live Demo](https://https://midi-router.vercel.app/)
 
-![MIDI Router Screenshot](https://via.placeholder.com/800x450.png?text=MIDI+Router+Screenshot)
+![MIDI Router Screenshot](./art/screenshot.png)
 
 ## Getting Started
 
@@ -63,7 +63,8 @@ This project uses:
 To modify the project:
 
 1. Edit the HTML, CSS, and JavaScript in `index.html`.
-2. If you're changing Tailwind classes, you may need to rebuild the CSS. Refer to the [Tailwind CSS documentation](https://tailwindcss.com/docs/installation) for more information.
+2. If you're changing Tailwind classes, you may need to rebuild the CSS. Refer to
+   the [Tailwind CSS documentation](https://tailwindcss.com/docs/installation) for more information.
 
 ## Contributing
 

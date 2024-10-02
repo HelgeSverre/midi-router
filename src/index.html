@@ -3,7 +3,7 @@
   lang="en"
   x-data="midiRouter()"
   x-init="init()"
-  :class="{ 'dark': darkMode }"
+  x-bind:class="{ 'dark': darkMode }"
   class="h-full w-full antialiased"
 >
   <head>
@@ -18,7 +18,7 @@
     <script type="module" src="./main.js" defer></script>
   </head>
   <body
-    class="h-full bg-zinc-100 font-sans text-xs text-zinc-900 transition-colors duration-200 dark:bg-zinc-900 dark:text-zinc-100"
+    class="h-full bg-zinc-100 font-sans text-xs text-zinc-900 transition-colors duration-200 ease-in-out dark:bg-zinc-900 dark:text-zinc-100"
   >
     <main class="flex h-full flex-1 flex-col">
       <nav
@@ -46,14 +46,17 @@
           </span>
         </h1>
 
-        <button
-          x-on:click="toggleDarkMode()"
-          class="p-1 text-xs text-black transition-colors duration-200 dark:text-white"
-          :aria-label="`Turn on ${darkMode ? 'light' : 'dark'} mode`"
-          :title="`Turn on ${darkMode ? 'light' : 'dark'} mode`"
-        >
-          <span x-text="darkMode ? '🌙' : '☀️'"></span>
-        </button>
+        <div class="flex">
+          <button
+            x-on:click="toggleDarkMode()"
+            class="p-1 text-sm font-semibold text-black transition-colors duration-200 ease-in-out dark:text-white"
+            :aria-label="`Turn on ${darkMode ? 'light' : 'dark'} mode`"
+            :title="`Turn on ${darkMode ? 'light' : 'dark'} mode`"
+          >
+            <span x-text="darkMode ? '🌙' : '☀️'"></span>
+            <span x-text="darkMode ? 'Light' : 'Dark'"></span>
+          </button>
+        </div>
       </nav>
 
       <main class="flex-1 overflow-auto bg-zinc-100 px-2 dark:bg-zinc-900">
@@ -87,10 +90,11 @@
                   <div x-data="{ isOpen: false }" class="relative">
                     <button
                       @click="isOpen = !isOpen"
-                      class="mx-auto flex size-7 items-center justify-center rounded px-1 text-center font-mono text-xl leading-none text-black/70"
-                      :class="{
+                      class="mx-auto flex size-7 items-center justify-center rounded px-1 text-center font-mono text-base leading-none"
+                      x-bind:class="{
                         'text-white': row.color?.text == 'white',
                         'text-black': row.color?.text == 'black',
+                        'text-black/70': row.color && row.color?.text == null,
                       }"
                       :style="`background-color: ${row.color.value || 'ffffff'}!important`"
                       :aria-expanded="isOpen"
@@ -107,7 +111,7 @@
                           <button
                             :style="`background-color: ${color.value}!important;`"
                             class="block size-8 rounded-sm border border-gray-300 dark:border-gray-600"
-                            :class="{
+                            x-bind:class="{
                               'text-white': color.text == 'white',
                               'text-black': color.text == 'black',
                             }"
@@ -224,16 +228,13 @@
               </tr>
             </template>
           </tbody>
-          <tfoot>
+          <tfoot class="align-text-bottom">
             <tr>
               <td
                 colspan="5"
                 class="border border-zinc-200 p-1 dark:border-zinc-700"
               >
-                <button
-                  @click="addRow()"
-                  class="rounded bg-zinc-900 px-2 py-1 text-xs font-medium text-white transition-colors duration-200 hover:bg-zinc-700 dark:bg-zinc-200 dark:text-zinc-800 dark:hover:bg-zinc-300"
-                >
+                <button @click="addRow()" class="action-button">
                   Add Connection
                 </button>
               </td>
@@ -273,7 +274,7 @@
           <template x-for="(log, index) in logMessages" :key="`log-${index}`">
             <div class="leading-4">
               <div
-                x-on:class="{
+                x-bind:class="{
                 'text-zinc-400': log.type === 'info',
                 'text-red-400': log.type === 'error',
                 'text-yellow-400': log.type === 'warning',
