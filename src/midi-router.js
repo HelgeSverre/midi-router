@@ -197,20 +197,18 @@ export default () => ({
     try {
       this.midiAccess = await navigator.requestMIDIAccess();
       this.updateDeviceLists();
-      this.midiAccess.onstatechange = () => {
-        this.updateDeviceLists();
-        this.updateConnections();
-      };
-
+      this.midiAccess.onstatechange = this.updateMIDIState;
       this.setupGlobalMIDIListeners();
-      if (this.rows.length === 0) {
-        this.addRow();
-      }
+      if (!this.rows.length) this.addRow();
     } catch (error) {
       console.error("MIDI access denied:", error);
     }
   },
 
+  updateMIDIState() {
+    this.updateDeviceLists();
+    this.updateConnections();
+  },
   panicSendAllNotesOff() {
     this.outputs.forEach((output) => {
       for (let channel = 0; channel < 16; channel++) {
