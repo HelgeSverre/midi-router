@@ -10,7 +10,6 @@ export default () => ({
   connections: [],
   logMessages: [],
   darkMode: false,
-  midiStatus: null,
 
   colors: [
     { label: "White", value: "#ffffff", text: "black" },
