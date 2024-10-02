@@ -46,15 +46,15 @@
           </span>
         </h1>
 
-        <div class="flex">
+        <div class="flex flex-row items-center justify-end gap-4">
           <button
             x-on:click="toggleDarkMode()"
-            class="p-1 text-sm font-semibold text-black transition-colors duration-200 ease-in-out dark:text-white"
+            class="inline-flex flex-row gap-2 p-1 text-sm text-black/20 transition-colors duration-200 ease-in-out hover:text-black dark:text-white/20 dark:hover:text-white"
             :aria-label="`Turn on ${darkMode ? 'light' : 'dark'} mode`"
             :title="`Turn on ${darkMode ? 'light' : 'dark'} mode`"
           >
-            <span x-text="darkMode ? '🌙' : '☀️'"></span>
             <span x-text="darkMode ? 'Light' : 'Dark'"></span>
+            <span x-text="darkMode ? '🌙' : '☀️'"></span>
           </button>
         </div>
       </nav>
