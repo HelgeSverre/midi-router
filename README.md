@@ -12,43 +12,29 @@ devices. It's perfect for musicians, producers, and anyone working with MIDI-ena
 - 🌓 Dark mode support
 - 📊 Real-time MIDI event logging
 - 💾 Automatic saving of routing configurations
+- 🎨 Color-coded connections for easy visual organization
+- 🔄 Clone and adjust routing configurations quickly
 
-## Demo
+## 🖥️ Demo
 
-[View Live Demo](https://https://midi-router.vercel.app/)
+[View Live Demo](https://midi-router.vercel.app/)
 
 ![MIDI Router Screenshot](./art/screenshot.png)
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 
 - A web browser that supports the Web MIDI API (e.g., Chrome, Edge)
 - MIDI devices (input and/or output)
 
-### Hosted Version
+### Hosted version
 
 The application is hosted on Vercel. You can access it at the following URL:
 
 > 🔗 [https://midi-router.vercel.app/](https://midi-router.vercel.app/)
 
-### Installation - Local Development
-
-1. Clone the repository:
-
-   ```
-   git clone https://github.com/HelgeSverre/midi-router.git
-   ```
-
-2. Navigate to the project directory:
-
-   ```
-   cd midi-router
-   ```
-
-3. Open `index.html` in your web browser.
-
-## Usage
+## 🎛️ Usage
 
 1. Connect your MIDI devices to your computer.
 2. Open the MIDI Router application in your web browser.
@@ -56,26 +42,56 @@ The application is hosted on Vercel. You can access it at the following URL:
 4. Use the interface to create routing configurations:
    - Select input devices and channels
    - Choose output devices and channels
-   - Add or remove routing connections as needed
-5. The application will automatically save your configurations for future use.
+   - Add, remove, or clone routing connections as needed
+   - Use color-coding to organize your connections visually
+5. Monitor MIDI activity in real-time using the built-in event logger.
+6. Your configurations will be automatically saved for future sessions.
 
-## Development
+## 🛠️ Development
 
-This project uses:
+```shell
+git clone https://github.com/HelgeSverre/midi-router.git
 
-- [Alpine.js](https://alpinejs.dev/) for reactive JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) for styling
+cd midi-router
 
-To modify the project:
+# Install dependencies
+yarn install
 
-1. Edit the HTML, CSS, and JavaScript in `index.html`.
-2. If you're changing Tailwind classes, you may need to rebuild the CSS. Refer to
-   the [Tailwind CSS documentation](https://tailwindcss.com/docs/installation) for more information.
+# Start the development server
+yarn dev
 
-## Contributing
+# Build the project
+yarn build
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+# Format the code
+yarn format
+```
 
-## License
+## 🤝 Contributing
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+We welcome contributions! Here's how you can help:
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/AmazingFeature`)
+3. Make your changes
+4. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+5. Push to the branch (`git push origin feature/AmazingFeature`)
+6. Open a Pull Request
+
+Please ensure your code adheres to the existing style and passes any tests.
+
+## 🐛 Troubleshooting
+
+If you encounter issues:
+
+1. Ensure your browser supports the Web MIDI API
+2. Check that your MIDI devices are properly connected and recognized by your computer
+3. Clear your browser cache and reload the page
+4. Check the console for any error messages
+
+If you're still having trouble, please [open an issue](https://github.com/HelgeSverre/midi-router/issues) on our GitHub
+repository.
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
