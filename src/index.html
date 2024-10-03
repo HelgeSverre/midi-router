@@ -1,8 +1,7 @@
 <!doctype html>
 <html
   lang="en"
-  x-data="midiRouter()"
-  x-init="init()"
+  x-data="midiRouter"
   x-bind:class="{ 'dark': darkMode }"
   class="h-full w-full antialiased"
 >
@@ -106,7 +105,7 @@
                 <td class="size-10">
                   <div x-data="{ isOpen: false }" class="relative">
                     <button
-                      @click="isOpen = !isOpen"
+                      x-on:click="isOpen = !isOpen"
                       class="mx-auto flex size-7 items-center justify-center rounded px-1 text-center font-mono text-base leading-none"
                       x-bind:class="{
                         'text-white': row.color?.text == 'white',
@@ -120,7 +119,7 @@
                     </button>
                     <div
                       x-show="isOpen"
-                      @click.away="isOpen = false"
+                      x-on:click.away="isOpen = false"
                       class="absolute left-full top-full z-10 mt-1 w-60 rounded-md border border-gray-200 bg-white p-2 shadow-lg dark:border-gray-700 dark:bg-gray-800"
                     >
                       <div class="grid grid-cols-6 gap-1">
@@ -215,7 +214,7 @@
                 >
                   <div class="flex flex-wrap items-center justify-center gap-1">
                     <button
-                      @click="cloneRow(index)"
+                      x-on:click="cloneRow(index)"
                       class="action-button flex items-center"
                       title="Clone"
                     >
@@ -235,7 +234,7 @@
                       Clone
                     </button>
                     <button
-                      @click="cloneRowAndAdjustChannel(index, 1, 'input')"
+                      x-on:click="cloneRowAndAdjustChannel(index, 1, 'input')"
                       class="action-button flex items-center"
                       title="Clone and increase input channel"
                     >
@@ -254,7 +253,7 @@
                       Ch.In
                     </button>
                     <button
-                      @click="cloneRowAndAdjustChannel(index, 1, 'output')"
+                      x-on:click="cloneRowAndAdjustChannel(index, 1, 'output')"
                       class="action-button flex items-center"
                       title="Clone and increase output channel"
                     >
@@ -273,7 +272,7 @@
                       Ch.Out
                     </button>
                     <button
-                      @click="removeRow(index)"
+                      x-on:click="removeRow(index)"
                       class="action-button flex items-center"
                       title="Delete"
                     >
@@ -304,7 +303,7 @@
               >
                 <div class="flex w-full items-center justify-end">
                   <button
-                    @click="addRow()"
+                    x-on:click="addRow()"
                     class="action-button flex items-center"
                     title="Add Connection"
                   >
@@ -336,16 +335,26 @@
           <span class="font-mono text-xs leading-none">MIDI Event Log</span>
           <div class="flex space-x-2">
             <button
-              @click="clearLog"
+              x-on:click="toggleDebug()"
+              class="block p-0.5 text-xs leading-none text-zinc-800 dark:text-zinc-900"
+              title="Debug mode"
+            >
+              <span>Debug</span>
+              <span x-text="debug ? 'on' : 'off'"></span>
+            </button>
+
+            <button
+              x-on:click="clearLog"
               class="block p-0.5 text-xs leading-none text-zinc-800 dark:text-zinc-400"
             >
               Clear
             </button>
+
             <button
-              @click="toggleConsole()"
+              x-on:click="toggleConsole()"
               class="block p-0.5 text-xs leading-none text-zinc-800 dark:text-zinc-400"
             >
-              Toggle
+              <span x-text="consoleOpen ? 'Hide' : 'Show'"></span>
             </button>
           </div>
         </div>
@@ -361,14 +370,17 @@
             <div class="leading-4">
               <div
                 x-bind:class="{
+                'hidden': log.type === 'debug' && debug === false,
+                'text-purple-300': log.type === 'debug' && debug === true,
                 'text-zinc-400': log.type === 'info',
                 'text-red-400': log.type === 'error',
                 'text-yellow-400': log.type === 'warning',
                 'text-green-400': log.type === 'success',
-                'text-purple-300': log.type === 'debug',
+                'text-black bg-yellow-500 my-2 p-2 font-bold': log.type === 'alert',
                 }"
               >
-                <kbd class="mr-1 text-slate-400" x-text="log.timestamp"></kbd>
+                <kbd class="mr-1 opacity-50" x-text="log.timestamp"></kbd>
+                <span x-show="log.type === 'debug'">🚧</span>
                 <span x-text="log.message"></span>
               </div>
             </div>
