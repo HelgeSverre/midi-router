@@ -1,7 +1,5 @@
 # 🎹↯ MIDI Router
 
-![MIDI Router Logo](https://via.placeholder.com/1200x300.png?text=MIDI+Router)
-
 MIDI Router is a web-based application that allows you to route MIDI messages between different input and output
 devices. It's perfect for musicians, producers, and anyone working with MIDI-enabled hardware or software.
 
