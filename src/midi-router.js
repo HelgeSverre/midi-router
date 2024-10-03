@@ -1,4 +1,4 @@
-import { generateRandomID } from "@/utils.js";
+import { bytesToHex, generateRandomID } from "@/utils.js";
 
 export default () => ({
   debug: true,
@@ -174,7 +174,9 @@ export default () => ({
       // `Unknown: Status ${status.toString(16)}, Data [${data1}, ${data2}]`,
     ];
 
-    const suffix = `| Raw: [${[status, data1, data2].map((d) => d.toString(16).padStart(2, "0")).join(" ")}]`;
+    const hex = bytesToHex([status, data1, data2]);
+
+    const suffix = `| Raw: [${hex}]`;
     const randomMIDIEvent =
       midiEventTypes[Math.floor(Math.random() * midiEventTypes.length)];
 
@@ -326,15 +328,11 @@ export default () => ({
             const newStatus = (status & 0xf0) | (parseInt(outputChannel) - 1);
             output.send([newStatus, data1, data2]);
 
-            const hexData = event.data
-              .map((d) => d.toString(16).padStart(2, "0"))
-              .join(" ");
-            const newHexData = [newStatus, data1, data2]
-              .map((d) => d.toString(16).padStart(2, "0"))
-              .join(" ");
+            const hexIn = bytesToHex(event.data);
+            const hexOut = bytesToHex([newStatus, data1, data2]);
 
             const decodedMessage = this.decodeMIDIMessage(status, data1, data2);
-            const logMessage = `Routed: ${input.name} (ch ${channel + 1}) -> ${output.name} (ch ${outputChannel}): ${decodedMessage} | Raw: [${hexData}] -> [${newHexData}]`;
+            const logMessage = `Routed: ${input.name} (ch ${channel + 1}) -> ${output.name} (ch ${outputChannel}): ${decodedMessage} | Raw: [${hexIn}] -> [${hexOut}]`;
             this.logToWindow(logMessage, "success");
           }
         },
@@ -363,7 +361,8 @@ export default () => ({
       input.addEventListener("midimessage", (event) => {
         const [status, data1, data2] = event.data;
         const decodedMessage = this.decodeMIDIMessage(status, data1, data2);
-        const logMessage = `${input.name}: ${decodedMessage} \t|\t Raw: [${event.data.map((d) => d.toString(16).padStart(2, "0")).join(" ")}]`;
+        const hex = bytesToHex(event.data);
+        const logMessage = `${input.name}: ${decodedMessage} \t|\t Raw: [${hex}]`;
         console.log(logMessage);
         this.logToWindow(logMessage, "info");
       });
