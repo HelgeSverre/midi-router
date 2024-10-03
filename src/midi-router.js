@@ -292,9 +292,33 @@ export default () => {
       const originalRow = this.rows[index];
       const newRow = JSON.parse(JSON.stringify(originalRow)); // Deep clone
       newRow.id = generateRandomID(); // Assign a new ID
+
+      // Insert the new row after the original
       this.rows.splice(index + 1, 0, newRow);
 
-      this.updateConnections();
+      // Disconnect the original row and reconnect it
+      this.disconnectMIDIPort(originalRow.id);
+      this.connectMIDIPorts(
+        originalRow.inputId,
+        originalRow.outputId,
+        originalRow.inputChannel,
+        originalRow.outputChannel,
+        originalRow.id,
+      );
+
+      // Connect the new row
+      this.connectMIDIPorts(
+        newRow.inputId,
+        newRow.outputId,
+        newRow.inputChannel,
+        newRow.outputChannel,
+        newRow.id,
+      );
+
+      this.logToWindow(
+        `Cloned row ${originalRow.id} to new row ${newRow.id}`,
+        "info",
+      );
     },
 
     cloneRowAndAdjustChannel(index, adjustment, direction = "input") {
@@ -316,9 +340,32 @@ export default () => {
         );
       }
 
+      // Insert the new row after the original
       this.rows.splice(index + 1, 0, newRow);
 
-      this.updateConnections();
+      // Disconnect the original row and reconnect it
+      this.disconnectMIDIPort(originalRow.id);
+      this.connectMIDIPorts(
+        originalRow.inputId,
+        originalRow.outputId,
+        originalRow.inputChannel,
+        originalRow.outputChannel,
+        originalRow.id,
+      );
+
+      // Connect the new row
+      this.connectMIDIPorts(
+        newRow.inputId,
+        newRow.outputId,
+        newRow.inputChannel,
+        newRow.outputChannel,
+        newRow.id,
+      );
+
+      this.logToWindow(
+        `Cloned row ${originalRow.id} to new row ${newRow.id} with adjusted ${direction} channel`,
+        "info",
+      );
     },
 
     changeConnection(index, newPortId, oldPortId, direction) {
@@ -376,6 +423,17 @@ export default () => {
       const output = this.midiAccess.outputs.get(outputId);
 
       if (input && output) {
+        // Check if a connection with this rowId already exists
+        const existingConnectionIndex = this.connections.findIndex(
+          (conn) => conn.rowId === rowId,
+        );
+        if (existingConnectionIndex !== -1) {
+          // If it exists, remove the old listener
+          const oldConnection = this.connections[existingConnectionIndex];
+          input.removeEventListener("midimessage", oldConnection.onMidiEvent);
+          this.connections.splice(existingConnectionIndex, 1);
+        }
+
         const connection = {
           input,
           inputId,
@@ -406,6 +464,7 @@ export default () => {
         };
         input.addEventListener("midimessage", connection.onMidiEvent);
         this.connections.push(connection);
+        this.logToWindow(`Connected MIDI ports for row ${rowId}`, "info");
       }
     },
 
