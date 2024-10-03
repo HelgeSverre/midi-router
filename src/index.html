@@ -40,7 +40,9 @@
             <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" />
             <circle cx="18" cy="5" r="3" />
           </svg>
-          <span class="font-mono text-xs text-zinc-800 dark:text-zinc-300">
+          <span
+            class="font-mono text-xs font-bold text-zinc-800 dark:text-zinc-300"
+          >
             Midi Router
           </span>
         </h1>
@@ -48,14 +50,14 @@
         <div class="flex flex-row items-center justify-end gap-6">
           <button
             x-on:click="confirm('Are you sure you want to clear all saved data?') && clearPersistedState()"
-            class="inline-flex flex-row gap-2 p-1 text-sm text-black/20 transition-colors duration-200 ease-in-out hover:text-red-700 dark:text-white/20 dark:hover:text-red-400"
+            class="inline-flex flex-row gap-2 p-1 text-sm text-black/80 transition-colors duration-200 ease-in-out hover:text-red-700 dark:text-white/20 dark:hover:text-red-400"
           >
             Clear saved data
           </button>
 
           <button
             x-on:click="panicSendAllNotesOff()"
-            class="inline-flex flex-row gap-2 p-1 text-sm text-black/20 transition-colors duration-200 ease-in-out hover:text-black dark:text-white/20 dark:hover:text-white"
+            class="inline-flex flex-row gap-2 p-1 text-sm text-black/80 transition-colors duration-200 ease-in-out hover:text-black dark:text-white/20 dark:hover:text-white"
             title="Send all notes off"
           >
             ⚠️ Panic
@@ -63,7 +65,7 @@
 
           <button
             x-on:click="toggleDarkMode()"
-            class="inline-flex flex-row gap-2 p-1 text-sm text-black/20 transition-colors duration-200 ease-in-out hover:text-black dark:text-white/20 dark:hover:text-white"
+            class="inline-flex flex-row gap-2 p-1 text-sm text-black/80 transition-colors duration-200 ease-in-out hover:text-black dark:text-white/20 dark:hover:text-white"
             :aria-label="`Turn on ${darkMode ? 'light' : 'dark'} mode`"
             :title="`Turn on ${darkMode ? 'light' : 'dark'} mode`"
           >
