@@ -249,7 +249,7 @@ export default () => ({
 
   removeRow(index) {
     const row = this.rows[index];
-    this.disconnectMIDIPort(row.inputId, row.outputId);
+    this.disconnectMIDIPort(row.id);
     this.rows.splice(index, 1);
     this.saveConnections();
   },
@@ -298,12 +298,13 @@ export default () => ({
         row.outputId,
         row.inputChannel,
         row.outputChannel,
+        row.id,
       );
     }
     this.saveConnections();
   },
 
-  connectMIDIPorts(inputId, outputId, inputChannel, outputChannel) {
+  connectMIDIPorts(inputId, outputId, inputChannel, outputChannel, rowId) {
     const input = this.midiAccess.inputs.get(inputId);
     const output = this.midiAccess.outputs.get(outputId);
 
@@ -313,6 +314,7 @@ export default () => ({
         output,
         inputChannel,
         outputChannel,
+        rowId,
         onMidiEvent: (event) => {
           const [status, data1, data2] = event.data;
           const channel = status & 0x0f;
@@ -342,9 +344,9 @@ export default () => ({
     }
   },
 
-  disconnectMIDIPort(inputId, outputId) {
+  disconnectMIDIPort(rowId) {
     const connectionIndex = this.connections.findIndex(
-      (conn) => conn.input.id === inputId && conn.output.id === outputId,
+      (conn) => conn.rowId === rowId,
     );
     if (connectionIndex !== -1) {
       const connection = this.connections[connectionIndex];
@@ -468,6 +470,7 @@ export default () => ({
           row.outputId,
           row.inputChannel,
           row.outputChannel,
+          row.inputId,
         );
       }
     });
