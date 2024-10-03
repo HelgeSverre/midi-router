@@ -321,6 +321,27 @@ export default () => {
       this.updateConnections();
     },
 
+    changeConnection(index, newPortId, oldPortId, direction) {
+      const row = this.rows[index];
+      this.logToWindow(
+        `Changing connection from ${oldPortId} to ${newPortId} on row ${row.id} in direction ${direction}`,
+        "info",
+      );
+
+      // Remove the old connection
+      this.disconnectMIDIPort(row.id);
+
+      // Update the row with the new port ID
+      if (direction === "input") {
+        row.inputId = newPortId;
+      } else if (direction === "output") {
+        row.outputId = newPortId;
+      }
+
+      // Reconnect with the updated information
+      this.updateConnection(index);
+    },
+
     updateConnection(index) {
       const row = this.rows[index];
       this.logToWindow(
@@ -396,10 +417,12 @@ export default () => {
         const connection = this.connections[connectionIndex];
 
         const input = this.midiAccess.inputs.get(connection.inputId);
-        const output = this.midiAccess.outputs.get(connection.outputId);
+        if (input && connection.onMidiEvent) {
+          input.removeEventListener("midimessage", connection.onMidiEvent);
+        }
 
-        input.removeEventListener("midimessage", connection.onMidiEvent);
         this.connections.splice(connectionIndex, 1);
+        this.logToWindow(`Disconnected MIDI port for row ${rowId}`, "info");
       }
     },
 

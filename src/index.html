@@ -144,8 +144,8 @@
 
                 <td class="border border-zinc-200 p-1 dark:border-zinc-700">
                   <select
+                    x-on:change="(e) => changeConnection(index, e.target.value, row.inputId, 'input')"
                     x-model="row.inputId"
-                    x-on:change="updateConnection(index)"
                     class="input-field w-full"
                   >
                     <option disabled value="">Select input</option>
@@ -179,8 +179,8 @@
                 </td>
                 <td class="border border-zinc-200 p-1 dark:border-zinc-700">
                   <select
+                    x-on:change="(e) => changeConnection(index, e.target.value, row.outputId, 'output')"
                     x-model="row.outputId"
-                    x-on:change="updateConnection(index)"
                     class="input-field w-full"
                   >
                     <option disabled value="">Select output</option>
